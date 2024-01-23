@@ -2,7 +2,12 @@
 #include <fstream>
 using namespace TOCABI;
 
-//TEST//
+/////////commit/////////
+//git status
+//git add .
+//git commit -m "message"
+//git push origin MJ-CP-MPC_HK-comment
+////////////////////////
 
 // ofstream MJ_graph("/home/dyros/data/myeongju/MJ_graph.txt");
 // ofstream MJ_graph1("/home/dyros/data/myeongju/MJ_graph1.txt");
