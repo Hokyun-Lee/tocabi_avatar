@@ -2,6 +2,8 @@
 #include <fstream>
 using namespace TOCABI;
 
+//TEST//
+
 // ofstream MJ_graph("/home/dyros/data/myeongju/MJ_graph.txt");
 // ofstream MJ_graph1("/home/dyros/data/myeongju/MJ_graph1.txt");
 // ofstream MJ_joint1("/home/dyros/data/myeongju/MJ_joint1.txt");
