@@ -1,14 +1,15 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(tocabi_avatar)
 
-add_compile_options(-std=c++17 -O3)
-
+add_compile_options(-std=c++17 -Ofast)
 find_package(catkin REQUIRED
 roscpp
 tocabi_lib
 tocabi_msgs
 eigen_conversions
 )
+find_package(dwbc REQUIRED)
+
 
 # find_package(lexls REQUIRED)
 
@@ -26,15 +27,17 @@ catkin_package(
 include_directories(
     include
     ${catkin_INCLUDE_DIRS}
+    ${dwbc_DIRS}
 )
 
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC
   src/avatar.cpp
 )
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
+  dwbc
 )
 
 # target_link_libraries(${PROJECT_NAME} PUBLIC lexls::lexls)
