@@ -27,6 +27,9 @@
 #include "tocabi_msgs/WalkingCommand.h"
 #include <std_msgs/Float32.h>
 
+// DWBC
+#include <libdwbc/dwbc.h>
+
 const int FILE_CNT = 14;
 
 const std::string FILE_NAMES[FILE_CNT] =
@@ -1760,6 +1763,11 @@ public:
 
     Eigen::VectorQd q_mj;
     Eigen::VectorQd q_mj_prev;
+
+    ////HK
+    DWBC::RobotData drd_;
+    bool initial_flag_hk = true;
+
 private:    
     //////////////////////////////// Myeong-Ju
     unsigned int walking_tick_mj = 0;
@@ -1767,5 +1775,6 @@ private:
     unsigned int walking_tick_mj_thread_ = 0;
     unsigned int initial_tick_mj = 0;
     unsigned int initial_flag = 0;
-    const double hz_ = 2000.0;  
+    const double hz_ = 2000.0;
+
 };
