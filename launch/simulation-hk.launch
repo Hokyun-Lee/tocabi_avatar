@@ -1,0 +1,9 @@
+<launch>
+    <!-- 다른 패키지에 있는 launch 파일 실행 -->
+    <include file="$(find tocabi_controller)/launch/simulation.launch">
+        <arg name="hand" value="false"/>
+    </include>
+
+    <param name="force_temp_" type="double" value="2000"/>
+    <param name="theta_temp_" type="double" value="90"/>
+</launch>

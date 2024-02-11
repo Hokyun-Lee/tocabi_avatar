@@ -1,5 +1,6 @@
 #include "avatar.h"
 #include <fstream>
+
 using namespace TOCABI;
 
 // ofstream MJ_graph("/home/dyros/data/myeongju/MJ_graph.txt");
@@ -104,7 +105,12 @@ AvatarController::AvatarController(RobotData &rd) : rd_(rd)
 
     
     ///// HK
-    // 위에있음 ㅋ
+    ros::param::get("force_temp_", force_temp_);
+    ros::param::get("theta_temp_", theta_temp_);
+    std::cout << "force_temp_ : " << force_temp_ << std::endl;
+    std::cout << "theta_temp_ : " << theta_temp_ << std::endl;
+    
+
     // std::string urdf_path;
     ros::param::get("/tocabi_controller/urdf_path", urdf_path);
 
@@ -748,11 +754,11 @@ void AvatarController::computeSlow()
             // Saving for initial upper body pose
             // edited by MJ (Initial upper body trajectory generation for CAM control /220110)
             CAM_upper_init_q_.setZero();
-            Initial_ref_upper_q_.setZero();
-            for (int i = 12; i < MODEL_DOF; i++)
-            {
-                Initial_ref_upper_q_(i) = ref_q_(i);
-            }
+            // Initial_ref_upper_q_.setZero();
+            // for (int i = 12; i < MODEL_DOF; i++)
+            // {
+            //     Initial_ref_upper_q_(i) = ref_q_(i);
+            // }
             
             // CAM_upper_init_q_(15) = + 15.0 * DEG2RAD; // Left Shoulder Yaw joint // 17 deg
             // CAM_upper_init_q_(16) = + 10.0 * DEG2RAD; // Left Shoulder Pitch joint // 17 deg
@@ -795,8 +801,8 @@ void AvatarController::computeSlow()
                 torque_upper_.setZero();
                 torque_upper_.segment(12, MODEL_DOF - 12) = rd_.torque_desired.segment(12, MODEL_DOF - 12);
 
-                cout << "parameter setting OK" << endl;
-                cout << "mode = 11" << endl;
+                // cout << "parameter setting OK" << endl;
+                // cout << "mode = 11" << endl;
             }
                
             updateInitialState();
@@ -876,6 +882,7 @@ void AvatarController::computeSlow()
                 desired_q_not_compensated_ = ref_q_;
                 updateNextStepTime();
                 q_prev_MJ_ = rd_.q_;
+
                                 
                 if(current_step_num_ == 4 && (walking_tick_mj >= t_start_ + 0.15*hz_ + 0.6*0.3*hz_)  && (walking_tick_mj < t_start_ + 0.15*hz_ + 0.6*0.3*hz_ + 0.2*hz_))
                 {    
@@ -1509,7 +1516,7 @@ void AvatarController::computeFast()
         motionGenerator();
         //STEP3: Compute q_dot for CAM control
          
-        computeCAMcontrol_HQP();
+        // computeCAMcontrol_HQP();
          
         for (int i = 12; i < MODEL_DOF; i++)
         {
