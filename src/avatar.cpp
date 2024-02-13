@@ -734,13 +734,27 @@ void AvatarController::computeSlow()
         //if( int(rd_.control_time_*2000)%1000 == 0)
         //    cout << "l_ft: "<<l_ft_.transpose() << "\n r_ft_: " << r_ft_.transpose() << endl; 
     }
-    else if (rd_.tc_.mode == 11)
+    else if (rd_.tc_.mode == 14)
     {
+        ///14141414141414141414141414141414141414141414141414141414///
         //////////////////////////////////////////////////////////////
         /////////////////// HK Walking Controller ////////////////////
         //////////////////////////////////////////////////////////////
+        ///14141414141414141414141414141414141414141414141414141414///
 
-        if (initial_flag_hk)
+        if (rd_.tc_init)
+        {
+
+    }
+    else if (rd_.tc_.mode == 11)
+    {
+        //////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////
+        /////////////////// HK Walking Controller ////////////////////
+        //////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////
+
+        if (rd_.tc_init)
         {
             Joint_gain_set_MJ();
             walking_enable_ = true;
@@ -783,8 +797,17 @@ void AvatarController::computeSlow()
             Gravity_MJ_ = WBC::ContactForceRedistributionTorqueWalking(rd_, WBC::GravityCompensationTorque(rd_), 0.9, 1, 0);
             //Gravity_MJ_.setZero();
             atb_grav_update_ = false;
-            initial_flag_hk = false;
+            // initial_flag_hk = false;
+
+
+
+
+
+
         }
+
+        drd_.UpdateKinematics(rd_.q_virtual_, rd_.q_dot_virtual_, rd_.q_ddot_virtual_);
+        drd_.control_time_ = rd_.control_time_;
 
         if (walking_enable_ == true)
         {
@@ -834,15 +857,65 @@ void AvatarController::computeSlow()
                 }
                 
                 computeIkControl_MJ(pelv_trajectory_float_, lfoot_trajectory_float_, rfoot_trajectory_float_, q_des_);
-                Compliant_control(q_des_);
+                // Compliant_control(q_des_);
+                
+                // Contact_Gravity_HK();
+
+                // drd_.ClearTaskSpace();
+                // // rd_.link_[Pelvis].x_desired = rd_.tc_.ratio * rd_.link_[Left_Foot].x_init + (1 - rd_.tc_.ratio) * rd_.link_[Right_Foot].x_init;
+                // // rd_.link_[Pelvis].x_desired(2) = rd_.tc_.height;
+                // // rd_.link_[Pelvis].rot_desired = DyrosMath::Euler2rot(0, rd_.tc_.pelv_pitch * DEG2RAD, rd_.link_[Pelvis].yaw_init);
+                // // rd_.link_[Upper_Body].rot_desired = DyrosMath::Euler2rot(rd_.tc_.roll * DEG2RAD, rd_.tc_.pitch * DEG2RAD, rd_.tc_.yaw * DEG2RAD + rd_.link_[Pelvis].yaw_init);
+                // // Vector3d com_diff = rd_.link_[Pelvis].x_desired - rd_.link_[COM_id].x_init;
+                // // rd_.link_[Left_Hand].x_desired = rd_.link_[Left_Hand].x_init + com_diff;
+                // // rd_.link_[Right_Hand].x_desired = rd_.link_[Right_Hand].x_init + com_diff;
+                
+                // drd_.AddTaskSpace(0, DWBC::TASK_LINK_POSITION, "COM", Vector3d::Zero());
+                // drd_.ts_[0].task_link_[0].SetTaskGain(rd_.link_[0].pos_p_gain, rd_.link_[0].pos_d_gain, rd_.link_[0].pos_a_gain, rd_.link_[0].rot_p_gain, rd_.link_[0].rot_d_gain, rd_.link_[0].rot_a_gain);
+                // drd_.ts_[0].task_link_[0].SetTrajectoryQuintic(rd_.tc_time_, rd_.tc_time_ + rd_.tc_.time, rd_.link_[COM_id].x_init, Vector3d::Zero(), rd_.link_[Pelvis].x_desired, Vector3d::Zero());
+                // // drd_.ts_[0].SetTrajectoryRotation(rd_.tc_time_, rd_.tc_time_ + rd_.tc_.time, rd_.link_[Pelvis].rot_init, Vector3d::Zero(), rd_.link_[Pelvis].rot_desired, Vector3d::Zero());
+
+                // drd_.AddTaskSpace(1, DWBC::TASK_LINK_ROTATION, "pelvis_link", Vector3d::Zero());
+                // drd_.ts_[1].task_link_[0].SetTaskGain(rd_.link_[0].pos_p_gain, rd_.link_[0].pos_d_gain, rd_.link_[0].pos_a_gain, rd_.link_[0].rot_p_gain, rd_.link_[0].rot_d_gain, rd_.link_[0].rot_a_gain);
+                // drd_.ts_[1].task_link_[0].SetTrajectoryRotation(rd_.tc_time_, rd_.tc_time_ + rd_.tc_.time, rd_.link_[Pelvis].rot_init, Vector3d::Zero(), rd_.link_[Pelvis].rot_desired, Vector3d::Zero());
+
+                // drd_.AddTaskSpace(2, DWBC::TASK_LINK_ROTATION, "upperbody_link", Vector3d::Zero());
+                // drd_.ts_[2].task_link_[0].SetTaskGain(rd_.link_[0].pos_p_gain, rd_.link_[0].pos_d_gain, rd_.link_[0].pos_a_gain, rd_.link_[0].rot_p_gain, rd_.link_[0].rot_d_gain, rd_.link_[0].rot_a_gain);
+                // drd_.ts_[2].task_link_[0].SetTrajectoryRotation(rd_.tc_time_, rd_.tc_time_ + rd_.tc_.time, rd_.link_[Upper_Body].rot_init, Vector3d::Zero(), rd_.link_[Upper_Body].rot_desired, Vector3d::Zero());
+
+                // drd_.AddTaskSpace(3, DWBC::TASK_LINK_6D, "l_wrist2_link", Vector3d::Zero());
+                // drd_.ts_[3].task_link_[0].SetTaskGain(rd_.link_[0].pos_p_gain, rd_.link_[0].pos_d_gain, rd_.link_[0].pos_a_gain, rd_.link_[0].rot_p_gain, rd_.link_[0].rot_d_gain, rd_.link_[0].rot_a_gain);
+                // drd_.ts_[3].task_link_[0].SetTrajectoryQuintic(rd_.tc_time_, rd_.tc_time_ + rd_.tc_.time, rd_.link_[Left_Hand].x_init, Vector3d::Zero(), rd_.link_[Left_Hand].x_desired, Vector3d::Zero());
+                // drd_.ts_[3].task_link_[0].SetTrajectoryRotation(rd_.tc_time_, rd_.tc_time_ + rd_.tc_.time, rd_.link_[Left_Hand].rot_init, Vector3d::Zero(), rd_.link_[Left_Hand].rot_init, Vector3d::Zero());
+
+                // drd_.AddTaskSpace(3, DWBC::TASK_LINK_6D, "r_wrist2_link", Vector3d::Zero());
+                // drd_.ts_[3].task_link_[1].SetTaskGain(rd_.link_[0].pos_p_gain, rd_.link_[0].pos_d_gain, rd_.link_[0].pos_a_gain, rd_.link_[0].rot_p_gain, rd_.link_[0].rot_d_gain, rd_.link_[0].rot_a_gain);
+                // drd_.ts_[3].task_link_[1].SetTrajectoryQuintic(rd_.tc_time_, rd_.tc_time_ + rd_.tc_.time, rd_.link_[Right_Hand].x_init, Vector3d::Zero(), rd_.link_[Right_Hand].x_desired, Vector3d::Zero());
+                // drd_.ts_[3].task_link_[1].SetTrajectoryRotation(rd_.tc_time_, rd_.tc_time_ + rd_.tc_.time, rd_.link_[Right_Hand].rot_init, Vector3d::Zero(), rd_.link_[Right_Hand].rot_init, Vector3d::Zero());
+
+                // drd_.SetContact(1, 1);
+                // drd_.CalcContactConstraint();
+                // drd_.CalcGravCompensation();
+                // drd_.CalcTaskSpace();
+                
+                // int ret1, ret2;
+                // bool init_qp = true;
+                // ret1 = drd_.CalcTaskControlTorque(true, init_qp, false);
+                // ret2 = drd_.CalcContactRedistribute(true, init_qp);
+
+
+                // rd_.torque_desired = drd_.torque_task_ + drd_.torque_grav_ + drd_.torque_contact_;
+
+
+
                 for (int i = 0; i < 12; i++)
                 {
                     // ref_q_(i) = q_des_(i);
                     ref_q_pre_(i) = ref_q_(i);
                     ref_q_(i) = DOB_IK_output_(i);
                 }
-                //hip_compensator();
-                //GravityCalculate_MJ();
+                // hip_compensator();
+                // GravityCalculate_MJ();
 
                 if (atb_grav_update_ == false)
                 {
@@ -851,22 +924,22 @@ void AvatarController::computeSlow()
                     atb_grav_update_ = false;
                 }
 
-                if (walking_tick_mj < 1.0 * hz_)
-                {
-                    //for leg
-                    for (int i = 0; i < 12; i++)
-                    {                           
-                        ref_q_(i) = DyrosMath::cubic(walking_tick_mj, 0, 1.0 * hz_, Initial_ref_q_(i), q_des_(i), 0.0, 0.0);
-                    }
-                    //for waist
-                    // ref_q_(13) = Initial_ref_q_(13);
-                    // ref_q_(14) = Initial_ref_q_(14);
-                    // //for arm
-                    // ref_q_(16) = Initial_ref_q_(16);
-                    // ref_q_(26) = Initial_ref_q_(26);
-                    // ref_q_(17) = DyrosMath::cubic(walking_tick_mj, 0, 1.0 * hz_, Initial_ref_q_(17), 50.0 * DEG2RAD, 0.0, 0.0);  // + direction angle makes the left arm down.
-                    // ref_q_(27) = DyrosMath::cubic(walking_tick_mj, 0, 1.0 * hz_, Initial_ref_q_(27), -50.0 * DEG2RAD, 0.0, 0.0); // - direction angle makes the right arm down.
-                }
+                // if (walking_tick_mj < 1.0 * hz_)
+                // {
+                //     //for leg
+                //     for (int i = 0; i < 12; i++)
+                //     {                           
+                //         ref_q_(i) = DyrosMath::cubic(walking_tick_mj, 0, 1.0 * hz_, Initial_ref_q_(i), q_des_(i), 0.0, 0.0);
+                //     }
+                //     //for waist
+                //     // ref_q_(13) = Initial_ref_q_(13);
+                //     // ref_q_(14) = Initial_ref_q_(14);
+                //     // //for arm
+                //     // ref_q_(16) = Initial_ref_q_(16);
+                //     // ref_q_(26) = Initial_ref_q_(26);
+                //     // ref_q_(17) = DyrosMath::cubic(walking_tick_mj, 0, 1.0 * hz_, Initial_ref_q_(17), 50.0 * DEG2RAD, 0.0, 0.0);  // + direction angle makes the left arm down.
+                //     // ref_q_(27) = DyrosMath::cubic(walking_tick_mj, 0, 1.0 * hz_, Initial_ref_q_(27), -50.0 * DEG2RAD, 0.0, 0.0); // - direction angle makes the right arm down.
+                // }
                 del_zmp(0) = 1.4 * (cp_measured_(0) - cp_desired_(0));
                 del_zmp(1) = 1.3 * (cp_measured_(1) - cp_desired_(1));
                 CP_compen_MJ();
@@ -934,6 +1007,12 @@ void AvatarController::computeSlow()
             {
                 torque_lower_(i) = Kp(i) * (ref_q_(i) - rd_.q_(i)) - Kd(i) * rd_.q_dot_(i) + Gravity_MJ_fast_(i);
             }
+
+            WBC::SetContact(rd_, 1, 1);
+            Gravity_HK_ = WBC::GravityCompensationTorque(rd_);
+            // Gravity_HK_ = WBC::ContactForceRedistributionTorqueWalking(rd_, WBC::GravityCompensationTorque(rd_), 0.9, 1, 0);
+            rd_.torque_desired = Gravity_HK_;
+
         }
         /////////////////////////////////////////////////////////////////////////////////////////
         if (atb_desired_q_update_ == false)
@@ -954,7 +1033,19 @@ void AvatarController::computeSlow()
         }
 
         ///////////////////////////////FINAL TORQUE COMMAND/////////////////////////////
-        rd_.torque_desired = torque_lower_ + torque_upper_;
+        // rd_.torque_desired = torque_lower_ + torque_upper_;
+
+
+        WBC::SetContact(rd_, 1, 1);
+        Gravity_HK_ = WBC::GravityCompensationTorque(rd_);
+        // Gravity_HK_ = WBC::ContactForceRedistributionTorqueWalking(rd_, WBC::GravityCompensationTorque(rd_), 0.9, 1, 0);
+        rd_.torque_desired = Gravity_HK_;
+
+
+        ///////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////
     }
     else if (rd_.tc_.mode == 12)
@@ -973,6 +1064,7 @@ void AvatarController::computeSlow()
         static bool init_qp;
         if (rd_.tc_init)
         {
+            std::cout << "Hi" << std::endl;
             if (rd_.tc_.customTaskGain)
             {
                 rd_.link_[Pelvis].SetGain(rd_.tc_.pos_p, rd_.tc_.pos_d, rd_.tc_.acc_p, rd_.tc_.ang_p, rd_.tc_.ang_d, 1);
@@ -1429,9 +1521,9 @@ void AvatarController::computeSlow()
 
         // printOutTextFile();
     }
-    else if (rd_.tc_.mode == 14)
-    {
-    }
+    // else if (rd_.tc_.mode == 14)
+    // {
+    // }
 }
 
 void AvatarController::computeFast()
@@ -1463,7 +1555,7 @@ void AvatarController::computeFast()
         {
             if (current_step_num_ < total_step_num_)
             {
-                GravityCalculate_MJ();
+                // GravityCalculate_MJ();
 
                 //STEP2: recieve desired AM
                 if(walking_tick_mj >= 1)
@@ -1518,11 +1610,11 @@ void AvatarController::computeFast()
          
         // computeCAMcontrol_HQP();
          
-        for (int i = 12; i < MODEL_DOF; i++)
-        {
-            desired_q_(i) = motion_q_(i);
-            desired_q_dot_(i) = motion_q_dot_(i); 
-        }
+        // for (int i = 12; i < MODEL_DOF; i++)
+        // {
+        //     desired_q_(i) = motion_q_(i);
+        //     desired_q_dot_(i) = motion_q_dot_(i); 
+        // }
 
         //STEP4: send desired q to the fast thread
         if (atb_desired_q_update_ == false)
@@ -1674,120 +1766,120 @@ void AvatarController::computeFast()
         }
         // printOutTextFile();
     }
-    else if (rd_.tc_.mode == 14)
-    {
-        ////////////////////////////////////////////////////////////////////////////
-        /////////////////// AVATAR Controller ////////////////////
-        ////////////////////////////////////////////////////////////////////////////
+    // else if (rd_.tc_.mode == 14)
+    // {
+    //     ////////////////////////////////////////////////////////////////////////////
+    //     /////////////////// AVATAR Controller ////////////////////
+    //     ////////////////////////////////////////////////////////////////////////////
 
-        torque_task_.setZero();
-        torque_init_.setZero();
-        if (rd_.tc_init == true)
-        {
-            initWalkingParameter();
-            rd_.tc_init = false;
-        }
+    //     torque_task_.setZero();
+    //     torque_init_.setZero();
+    //     if (rd_.tc_init == true)
+    //     {
+    //         initWalkingParameter();
+    //         rd_.tc_init = false;
+    //     }
 
-        //data process//
-        getRobotData();
-        walkingStateManager(); //avatar
-        getProcessedRobotData();
+    //     //data process//
+    //     getRobotData();
+    //     walkingStateManager(); //avatar
+    //     getProcessedRobotData();
 
-        foot_swing_trigger_ = false; //stay avatar
+    //     foot_swing_trigger_ = false; //stay avatar
 
-        //motion planing and control//
-        motionGenerator();
+    //     //motion planing and control//
+    //     motionGenerator();
 
-        // getComTrajectory_Preview(); 
-        // getSwingFootXYTrajectory(walking_phase_, com_pos_current_, com_vel_current_, com_vel_desired_);
+    //     // getComTrajectory_Preview(); 
+    //     // getSwingFootXYTrajectory(walking_phase_, com_pos_current_, com_vel_current_, com_vel_desired_);
 
-        if ((current_time_) >= program_start_time_ + program_ready_duration_)
-        {
-            torque_task_ += comVelocityControlCompute(); //support chain control for COM velocity and pelvis orientation
-            // if( int(current_time_*10000)%1000 == 0 )
-            // cout<<"torque_task_(12) 1st: " << torque_task_(13) << endl;
-            torque_task_ += swingFootControlCompute(); //swing foot control
-            // if( int(current_time_*10000)%1000 == 0 )
-            // cout<<"torque_task_(12) 2nd: " << torque_task_(13) << endl;
-            torque_task_ += jointTrajectoryPDControlCompute(); //upper body motion + joint damping control
-                                                               // if( int(current_time_*10000)%1000 == 0 )
-                                                               // cout<<"torque_task_(12) 3rd: " << torque_task_(13) << endl;
-                                                               // torque_task_ += dampingControlCompute(wbc_);
-                                                               // if( int(current_time_*10000)%1000 == 0 )
-                                                               // 	cout<<"torque_task_(12) 4th: " << torque_task_(13) << endl;
-                                                               // torque_task_ += jointLimit();
-                                                               // if( int(current_time_*10000)%1000 == 0 )
-                                                               // 	cout<<"torque_task_(12) 5th: " << torque_task_(13) << endl;
-        }
-        torque_task_.segment(0, 12).setZero();
-        torque_task_ += ikBalanceControlCompute();
+    //     if ((current_time_) >= program_start_time_ + program_ready_duration_)
+    //     {
+    //         torque_task_ += comVelocityControlCompute(); //support chain control for COM velocity and pelvis orientation
+    //         // if( int(current_time_*10000)%1000 == 0 )
+    //         // cout<<"torque_task_(12) 1st: " << torque_task_(13) << endl;
+    //         torque_task_ += swingFootControlCompute(); //swing foot control
+    //         // if( int(current_time_*10000)%1000 == 0 )
+    //         // cout<<"torque_task_(12) 2nd: " << torque_task_(13) << endl;
+    //         torque_task_ += jointTrajectoryPDControlCompute(); //upper body motion + joint damping control
+    //                                                            // if( int(current_time_*10000)%1000 == 0 )
+    //                                                            // cout<<"torque_task_(12) 3rd: " << torque_task_(13) << endl;
+    //                                                            // torque_task_ += dampingControlCompute(wbc_);
+    //                                                            // if( int(current_time_*10000)%1000 == 0 )
+    //                                                            // 	cout<<"torque_task_(12) 4th: " << torque_task_(13) << endl;
+    //                                                            // torque_task_ += jointLimit();
+    //                                                            // if( int(current_time_*10000)%1000 == 0 )
+    //                                                            // 	cout<<"torque_task_(12) 5th: " << torque_task_(13) << endl;
+    //     }
+    //     torque_task_.segment(0, 12).setZero();
+    //     torque_task_ += ikBalanceControlCompute();
 
-        // //CoM pos & pelv orientation control
-        // wbc_.SetContact(rd_, 1, 1);
+    //     // //CoM pos & pelv orientation control
+    //     // wbc_.SetContact(rd_, 1, 1);
 
-        // int task_number = 6;	//CoM is not controlled in z direction
-        // rd_.J_task.setZero(task_number, MODEL_DOF_VIRTUAL);
-        // rd_.f_star.setZero(task_number);
+    //     // int task_number = 6;	//CoM is not controlled in z direction
+    //     // rd_.J_task.setZero(task_number, MODEL_DOF_VIRTUAL);
+    //     // rd_.f_star.setZero(task_number);
 
-        // rd_.J_task = rd_.link_[COM_id].jac;
-        // //rd_.J_task.block(2, 0, 1, MODEL_DOF_VIRTUAL) = rd_.link_[Pelvis].jac.block(2, 0, 1, MODEL_DOF_VIRTUAL);
+    //     // rd_.J_task = rd_.link_[COM_id].jac;
+    //     // //rd_.J_task.block(2, 0, 1, MODEL_DOF_VIRTUAL) = rd_.link_[Pelvis].jac.block(2, 0, 1, MODEL_DOF_VIRTUAL);
 
-        // // rd_.J_task.block(2, 0, 3, MODEL_DOF_VIRTUAL) = rd_.link_[COM_id].jac.block(3, 0, 3, MODEL_DOF_VIRTUAL);
+    //     // // rd_.J_task.block(2, 0, 3, MODEL_DOF_VIRTUAL) = rd_.link_[COM_id].jac.block(3, 0, 3, MODEL_DOF_VIRTUAL);
 
-        // rd_.link_[COM_id].x_desired = tc.ratio * rd_.link_[Left_Foot].xpos + (1.0 - tc.ratio) * rd_.link_[Right_Foot].xpos;
-        // rd_.link_[COM_id].x_desired(2) = tc.height;
-        // rd_.link_[COM_id].Set_Trajectory_from_quintic(rd_.control_time_, tc.command_time, tc.command_time + 3);
+    //     // rd_.link_[COM_id].x_desired = tc.ratio * rd_.link_[Left_Foot].xpos + (1.0 - tc.ratio) * rd_.link_[Right_Foot].xpos;
+    //     // rd_.link_[COM_id].x_desired(2) = tc.height;
+    //     // rd_.link_[COM_id].Set_Trajectory_from_quintic(rd_.control_time_, tc.command_time, tc.command_time + 3);
 
-        // rd_.link_[COM_id].rot_desired = Matrix3d::Identity();
-        // // rd_.link_[COM_id].rot_desired = pelv_yaw_rot_current_from_global_mj_;
-        // rd_.link_[COM_id].Set_Trajectory_rotation(rd_.control_time_, tc.command_time, tc.command_time + 3, false);
+    //     // rd_.link_[COM_id].rot_desired = Matrix3d::Identity();
+    //     // // rd_.link_[COM_id].rot_desired = pelv_yaw_rot_current_from_global_mj_;
+    //     // rd_.link_[COM_id].Set_Trajectory_rotation(rd_.control_time_, tc.command_time, tc.command_time + 3, false);
 
-        // rd_.f_star = wbc_.getfstar6d(rd_, COM_id);
-        // // rd_.f_star.segment(0, 2) = wbc_.getfstar6d(rd_, COM_id).segment(0, 2);
-        // // rd_.f_star.segment(2, 3) = wbc_.getfstar6d(rd_, COM_id).segment(3, 3);
-        // //tocabi_.f_star.segment(0, 2) = wbc_.fstar_regulation(tocabi_, tocabi_.f_star.segment(0, 3));
-        // //torque_task = wbc_.task_control_torque(tocabi_, tocabi_.J_task, tocabi_.f_star, tc.solver);
-        // Eigen::VectorQd torque_com_control;
-        // torque_com_control = wbc_.task_control_torque_with_gravity(rd_, rd_.J_task, rd_.f_star);
-        // rd_.contact_redistribution_mode = 0;
+    //     // rd_.f_star = wbc_.getfstar6d(rd_, COM_id);
+    //     // // rd_.f_star.segment(0, 2) = wbc_.getfstar6d(rd_, COM_id).segment(0, 2);
+    //     // // rd_.f_star.segment(2, 3) = wbc_.getfstar6d(rd_, COM_id).segment(3, 3);
+    //     // //tocabi_.f_star.segment(0, 2) = wbc_.fstar_regulation(tocabi_, tocabi_.f_star.segment(0, 3));
+    //     // //torque_task = wbc_.task_control_torque(tocabi_, tocabi_.J_task, tocabi_.f_star, tc.solver);
+    //     // Eigen::VectorQd torque_com_control;
+    //     // torque_com_control = wbc_.task_control_torque_with_gravity(rd_, rd_.J_task, rd_.f_star);
+    //     // rd_.contact_redistribution_mode = 0;
 
-        // torque_task_.segment(0, 12) = torque_com_control.segment(0, 12);
-        // torque_task_(3) = (kp_joint_(3) * (desired_q_(3) - current_q_(3)) + kv_joint_(3) * (desired_q_dot_(3) - current_q_dot_(3)));
-        // torque_task_(9) = (kp_joint_(9) * (desired_q_(9) - current_q_(9)) + kv_joint_(9) * (desired_q_dot_(9) - current_q_dot_(9)));
-        ////////////////////////////////////////
+    //     // torque_task_.segment(0, 12) = torque_com_control.segment(0, 12);
+    //     // torque_task_(3) = (kp_joint_(3) * (desired_q_(3) - current_q_(3)) + kv_joint_(3) * (desired_q_dot_(3) - current_q_dot_(3)));
+    //     // torque_task_(9) = (kp_joint_(9) * (desired_q_(9) - current_q_(9)) + kv_joint_(9) * (desired_q_dot_(9) - current_q_dot_(9)));
+    //     ////////////////////////////////////////
 
-        savePreData();
+    //     savePreData();
 
-        ////////////////////////////////TORQUE LIMIT//////// //////////////////////
-        for (int i = 0; i < MODEL_DOF; i++)
-        {
-            torque_task_(i) = DyrosMath::minmax_cut(torque_task_(i), torque_task_min_(i), torque_task_max_(i));
-        }
-        ///////////////////////////////////////////////////////////////////////////
+    //     ////////////////////////////////TORQUE LIMIT//////// //////////////////////
+    //     for (int i = 0; i < MODEL_DOF; i++)
+    //     {
+    //         torque_task_(i) = DyrosMath::minmax_cut(torque_task_(i), torque_task_min_(i), torque_task_max_(i));
+    //     }
+    //     ///////////////////////////////////////////////////////////////////////////
 
-        //////////////////////////////FALLING//////////////////////////////
-        // fallDetection();
-        ///////////////////////////////////////////////////////////////////
+    //     //////////////////////////////FALLING//////////////////////////////
+    //     // fallDetection();
+    //     ///////////////////////////////////////////////////////////////////
 
-        rd_.torque_desired = torque_task_;
-        if (int(current_time_ * 10000) % 1000 == 0)
-        {
-            // 	cout<<"torque_task_(12): "<<torque_task_(12)<<endl;
-            // 	cout<<"torque_task_(13): "<<torque_task_(13)<<endl;
-            // 	cout<<"torque_task_(14): "<<torque_task_(14)<<endl;
-            // 	cout<<"desired_q_(12): "<<desired_q_(12)<<endl;
-            // 	cout<<"desired_q_(13): "<<desired_q_(13)<<endl;
-            // 	cout<<"desired_q_(14): "<<desired_q_(14)<<endl;
+    //     rd_.torque_desired = torque_task_;
+    //     if (int(current_time_ * 10000) % 1000 == 0)
+    //     {
+    //         // 	cout<<"torque_task_(12): "<<torque_task_(12)<<endl;
+    //         // 	cout<<"torque_task_(13): "<<torque_task_(13)<<endl;
+    //         // 	cout<<"torque_task_(14): "<<torque_task_(14)<<endl;
+    //         // 	cout<<"desired_q_(12): "<<desired_q_(12)<<endl;
+    //         // 	cout<<"desired_q_(13): "<<desired_q_(13)<<endl;
+    //         // 	cout<<"desired_q_(14): "<<desired_q_(14)<<endl;
 
-            // rd_.torque_desired .setZero();
-            // rd_.torque_desired (23) = torque_task_(23);
-            // rd_.torque_desired (24) = torque_task_(24);
-            // Vector3d temp_sh = pelv_yaw_rot_current_from_global_mj_.transpose() * (rd_.link_[Left_Hand-5].xpos - pelv_pos_current_);
-            // Vector3d temp_elbow = pelv_yaw_rot_current_from_global_mj_.transpose() * (rd_.link_[Left_Hand-3].xpos - pelv_pos_current_);
-            // Vector3d temp_hand = pelv_yaw_rot_current_from_global_mj_.transpose() * (rd_.link_[Left_Hand-1].xpos - pelv_pos_current_);
-        }
-        // printOutTextFile();
-    }
+    //         // rd_.torque_desired .setZero();
+    //         // rd_.torque_desired (23) = torque_task_(23);
+    //         // rd_.torque_desired (24) = torque_task_(24);
+    //         // Vector3d temp_sh = pelv_yaw_rot_current_from_global_mj_.transpose() * (rd_.link_[Left_Hand-5].xpos - pelv_pos_current_);
+    //         // Vector3d temp_elbow = pelv_yaw_rot_current_from_global_mj_.transpose() * (rd_.link_[Left_Hand-3].xpos - pelv_pos_current_);
+    //         // Vector3d temp_hand = pelv_yaw_rot_current_from_global_mj_.transpose() * (rd_.link_[Left_Hand-1].xpos - pelv_pos_current_);
+    //     }
+    //     // printOutTextFile();
+    // }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -10575,10 +10667,11 @@ void AvatarController::BoltController_MJ()
 void AvatarController::computeThread3()
 {
     comGenerator_MPC_wieber(50.0, 1.0/50.0, 2.5, 2000/50.0); // Hz, T, Preview window
+    new_cpcontroller_MPC_MJDG(50.0, 1.5);
+
     // cpcontroller_MPC_MJDG(50.0, 1.5); // Hz, Preview window
     // new_cpcontroller_MPC_ankle(50.0, 1.5);
     // new_cpcontroller_MPC_ankle_hip(50.0, 1.5);
-    new_cpcontroller_MPC_MJDG(50.0, 1.5);
     // new_cpcontroller_MPC_MJDG(20.0, 1.0); // T-RO revision
 }
 
@@ -16592,6 +16685,102 @@ void AvatarController::computeIkControl_MJ(Eigen::Isometry3d float_trunk_transfo
             q_des = q_des - SC_joint;
         }
     }    
+}
+
+void AvatarController::Contact_Gravity_HK()
+{
+    double contact_gain = 0.0;
+    double eta = 0.9;
+    VectorQd grav_;
+
+    if (walking_tick_mj < t_start_ + t_rest_init_)
+    {
+        drd_.SetContact(1,1);
+        Gravity_DSP_ = WBC::GravityCompensationTorque(rd_);
+        Gravity_SSP_.setZero();
+        contact_gain = 1.0;
+        if (foot_step_(current_step_num_, 6) == 1) // 왼발 지지
+        {
+            Gravity_DSP_ = WBC::ContactForceRedistributionTorqueWalking(rd_, Gravity_DSP_, eta, contact_gain, 1);
+        }
+        else if (foot_step_(current_step_num_, 6) == 0) // 오른발 지지
+        {
+            Gravity_DSP_ = WBC::ContactForceRedistributionTorqueWalking(rd_, Gravity_DSP_, eta, contact_gain, 0);
+        }
+    }
+    else if (walking_tick_mj >= t_start_ + t_rest_init_ && walking_tick_mj < t_start_ + t_rest_init_ + t_double1_) // 0.03 s
+    {
+        contact_gain = DyrosMath::cubic(walking_tick_mj, t_start_ + t_rest_init_, t_start_ + t_rest_init_ + t_double1_, 1.0, 0.0, 0.0, 0.0);
+
+        WBC::SetContact(rd_, 1, 1);
+        Gravity_DSP_ = WBC::GravityCompensationTorque(rd_);
+        Gravity_SSP_.setZero();
+        if (foot_step_(current_step_num_, 6) == 1) // 왼발 지지
+        {
+            Gravity_DSP_ = WBC::ContactForceRedistributionTorqueWalking(rd_, Gravity_DSP_, eta, contact_gain, 1);
+        }
+        else if (foot_step_(current_step_num_, 6) == 0) // 오른발 지지
+        {
+            Gravity_DSP_ = WBC::ContactForceRedistributionTorqueWalking(rd_, Gravity_DSP_, eta, contact_gain, 0);
+        }
+    }
+    else if (walking_tick_mj >= t_start_ + t_rest_init_ + t_double1_ && walking_tick_mj < t_start_ + t_total_ - t_rest_last_ - t_double2_) // SSP
+    {
+        if (foot_step_(current_step_num_, 6) == 1) // 왼발 지지
+        {
+            WBC::SetContact(rd_, 1, 0);
+            Gravity_SSP_ = WBC::GravityCompensationTorque(rd_);
+        }
+        else if (foot_step_(current_step_num_, 6) == 0) // 오른발 지지
+        {
+            WBC::SetContact(rd_, 0, 1);
+            Gravity_SSP_ = WBC::GravityCompensationTorque(rd_);
+        }
+        Gravity_DSP_.setZero();
+        contact_torque_MJ.setZero();
+    }
+    else if (walking_tick_mj >= t_start_ + t_total_ - t_rest_last_ - t_double2_ && walking_tick_mj < t_start_ + t_total_ - t_rest_last_)
+    {
+        contact_gain = DyrosMath::cubic(walking_tick_mj, t_start_ + t_total_ - t_rest_last_ - t_double2_, t_start_ + t_total_ - t_rest_last_, 0.0, 1.0, 0.0, 0.0);
+        Gravity_SSP_.setZero();
+        if (foot_step_(current_step_num_, 6) == 1) // 왼발 지지
+        {
+            WBC::SetContact(rd_, 1, 1);
+            Gravity_DSP_ = WBC::GravityCompensationTorque(rd_);
+            Gravity_DSP_ = WBC::ContactForceRedistributionTorqueWalking(rd_, Gravity_DSP_, eta, contact_gain, 1);
+        }
+        else if (foot_step_(current_step_num_, 6) == 0) // 오른발 지지
+        {
+            WBC::SetContact(rd_, 1, 1);
+            Gravity_DSP_ = WBC::GravityCompensationTorque(rd_);
+            Gravity_DSP_ = WBC::ContactForceRedistributionTorqueWalking(rd_, Gravity_DSP_, eta, contact_gain, 0);
+        }
+    }
+    else if (walking_tick_mj >= t_start_ + t_total_ - t_rest_last_ && walking_tick_mj < t_start_ + t_total_)
+    {
+        contact_gain = 1.0;
+
+        WBC::SetContact(rd_, 1, 1);
+        Gravity_DSP_ = WBC::GravityCompensationTorque(rd_);
+
+        Gravity_SSP_.setZero();
+        if (foot_step_(current_step_num_, 6) == 1) // 왼발 지지
+        {
+            Gravity_DSP_ = WBC::ContactForceRedistributionTorqueWalking(rd_, Gravity_DSP_, eta, contact_gain, 1);
+        }
+        else if (foot_step_(current_step_num_, 6) == 0) // 오른발 지지
+        {
+            Gravity_DSP_ = WBC::ContactForceRedistributionTorqueWalking(rd_, Gravity_DSP_, eta, contact_gain, 0);
+        }
+    }
+
+    if (atb_grav_update_ == false)
+    {
+        atb_grav_update_ = true;
+        Gravity_MJ_ = Gravity_DSP_ + Gravity_SSP_; // + contact_torque_MJ;
+        atb_grav_update_ = false;
+    }
+    //return grav_;
 }
 
 void AvatarController::GravityCalculate_MJ()

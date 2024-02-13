@@ -1634,6 +1634,7 @@ public:
 
     Eigen::VectorQd Gravity_MJ_fast_;
     Eigen::VectorQd Gravity_MJ_;
+    Eigen::VectorQd Gravity_HK_;
     Eigen::VectorQd Gravity_DSP_;
     Eigen::VectorQd Gravity_DSP_last_;
     Eigen::VectorQd Gravity_SSP_;
@@ -1767,6 +1768,7 @@ public:
     ////HK
     DWBC::RobotData drd_;
     bool initial_flag_hk = true;
+    void Contact_Gravity_HK();
 
 private:    
     //////////////////////////////// Myeong-Ju
