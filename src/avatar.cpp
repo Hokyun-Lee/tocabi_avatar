@@ -744,6 +744,7 @@ void AvatarController::computeSlow()
 
         if (rd_.tc_init)
         {
+        }
 
     }
     else if (rd_.tc_.mode == 11)
